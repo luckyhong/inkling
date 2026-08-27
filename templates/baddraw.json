@@ -1,0 +1,7 @@
+{
+  "template": "baddraw",
+  "duration_sec": 15,
+  "ratio": 0.75,
+  "style_suggestions": ["ms-paint-bad-doodle"],
+  "style_lock": "ms-paint-bad-doodle"
+}
