@@ -9,7 +9,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const outDir = path.join(__dirname, '..', 'assets', 'sfx');
+// Remotion's staticFile() only serves from public/, so generated assets
+// must live there rather than under a top-level assets/ dir.
+const outDir = path.join(__dirname, '..', 'public', 'assets', 'sfx');
 
 const SAMPLE_RATE = 44100;
 const DURATION_SEC = 2;
