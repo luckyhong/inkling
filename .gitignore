@@ -1,0 +1,29 @@
+# PRD/规划文档暂不入库
+docs/PRD.md
+
+# System
+.DS_Store
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+
+# Node
+node_modules/
+dist/
+build/
+out/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Env
+.env
+.env.local
