@@ -10,7 +10,9 @@
   "scripts": {
     "check:types": "tsc --noEmit",
     "generate:sfx": "node scripts/generate-sfx.mjs",
-    "plan": "node scripts/plan-short.mjs"
+    "plan": "node scripts/plan-short.mjs",
+    "validate": "node scripts/validate-shortboard.mjs shortboard.json",
+    "check": "npm run check:types && npm run validate"
   },
   "dependencies": {
     "@remotion/cli": "4.0.487",
