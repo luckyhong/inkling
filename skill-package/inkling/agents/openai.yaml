@@ -1,0 +1,4 @@
+interface:
+  display_name: "纸上瘾"
+  short_description: "生成「看着一张画长出来」的15-30秒竖屏短视频（反转/金句/烂画三模板）"
+  default_prompt: "使用 $inkling 把这句话做成一条纸上短片，自动选一个合适的模板（反转/金句/烂画）。"
