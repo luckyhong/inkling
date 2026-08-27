@@ -73,6 +73,32 @@ function assetSetFor(shortboard, styleFingerprint) {
   return `${safeTitle}-${hash}`;
 }
 
+// Written for both generators on success, so import-generated-image.mjs
+// can consume either path uniformly — it only cares about the "scene" job's
+// output_master, not which generator produced it.
+function writeManifest({ generatorName, style, shortboard, assetSet, promptFile, prompt, outputMaster, references }) {
+  const manifest = {
+    generator: generatorName,
+    style_id: style.id,
+    style_fingerprint: shortboard.project.style_fingerprint,
+    asset_set: assetSet,
+    shortboard: path.relative(rootDir, path.resolve(rootDir, 'shortboard.json')),
+    jobs: [
+      {
+        id: 'scene',
+        role: 'scene',
+        prompt_file: path.relative(rootDir, promptFile),
+        prompt,
+        output_master: path.relative(rootDir, outputMaster),
+        references: references.map((r) => path.relative(rootDir, r)),
+      },
+    ],
+  };
+  const manifestPath = path.join(rootDir, 'image-jobs.json');
+  writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+  return manifestPath;
+}
+
 function runCodexPath(shortboard, style, referenceFramePath) {
   const assetSet = assetSetFor(shortboard, shortboard.project.style_fingerprint);
   const promptDir = path.join(rootDir, 'prompts', 'generated', 'codex', assetSet);
@@ -89,26 +115,9 @@ function runCodexPath(shortboard, style, referenceFramePath) {
     ? [path.resolve(rootDir, referenceFramePath)]
     : style.references.map((r) => r.absolute_path);
 
-  const manifest = {
-    generator: 'codex-image2',
-    style_id: style.id,
-    style_fingerprint: shortboard.project.style_fingerprint,
-    asset_set: assetSet,
-    shortboard: path.relative(rootDir, path.resolve(rootDir, 'shortboard.json')),
-    jobs: [
-      {
-        id: 'scene',
-        role: 'scene',
-        prompt_file: path.relative(rootDir, promptFile),
-        prompt,
-        output_master: path.relative(rootDir, outputMaster),
-        references: references.map((r) => path.relative(rootDir, r)),
-      },
-    ],
-  };
-
-  const manifestPath = path.join(rootDir, 'image-jobs.json');
-  writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+  const manifestPath = writeManifest({
+    generatorName: 'codex-image2', style, shortboard, assetSet, promptFile, prompt, outputMaster, references,
+  });
 
   console.log(`wrote ${manifestPath}`);
   console.log(`wrote prompt ${promptFile}`);
@@ -163,6 +172,9 @@ function runApiPath(shortboard, style, referenceFramePath, maxAttempts) {
         { cwd: rootDir, stdio: 'pipe' },
       );
       console.log(`[generate-image] attempt ${attempt}/${maxAttempts} succeeded: ${outputMaster}`);
+      writeManifest({
+        generatorName: 'codex-image2-api', style, shortboard, assetSet, promptFile, prompt, outputMaster, references,
+      });
       return { degraded: false, outputMaster };
     } catch (err) {
       const message = err.stderr ? err.stderr.toString().trim().split('\n').slice(-3).join(' | ') : err.message;
