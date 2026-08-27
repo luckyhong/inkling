@@ -1,0 +1,13 @@
+schema_version: "1.0"
+template: twist
+title: overtime-trap
+duration_sec: 21
+style: colored-pencil-diary
+character_lock: "同一青年男性，短发，灰色卫衣"
+sfx: on
+credit_to: null
+
+hook: "他以为加班能换来升职。"
+visual: "他在工位上加班到深夜，台灯是唯一的光"
+reveal_visual: "空荡办公室只剩他一人，工位上贴着离职便签"
+punchline: "换来的是：位置都没了。"

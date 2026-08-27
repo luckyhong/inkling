@@ -1,0 +1,13 @@
+schema_version: "1.0"
+template: twist
+title: diet-day-one
+duration_sec: 21
+style: naive-marker-notes
+character_lock: null
+sfx: on
+credit_to: null
+
+hook: "她说从今天起要开始减肥。"
+visual: "冰箱贴着一张手写的「减肥计划表」，写满了打卡格子"
+reveal_visual: "冰箱门大开，她怀里抱着一整个蛋糕，打卡格子一个都没划"
+punchline: "计划从来只输给今天。"

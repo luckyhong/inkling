@@ -1,0 +1,12 @@
+schema_version: "1.0"
+template: baddraw
+title: we-are-family
+duration_sec: 15
+style: ms-paint-bad-doodle
+character_lock: null
+sfx: on
+credit_to: null
+
+hook: "领导说：咱们是一家人。"
+visual: "一个火柴人领导在吃蛋糕，员工全是没有嘴的火柴人"
+punchline: "家人一般不发工资。"

@@ -1,0 +1,12 @@
+schema_version: "1.0"
+template: punchline
+title: two-cups-of-tea
+duration_sec: 15
+style: colored-pencil-diary
+character_lock: null
+sfx: on
+credit_to: null
+
+hook: "有些人离开，不是不爱了。"
+visual: "雨夜窗边两杯没动的茶，其中一杯已经凉透"
+punchline: "是爱不起下一场消耗。"

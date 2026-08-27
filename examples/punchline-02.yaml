@@ -1,0 +1,12 @@
+schema_version: "1.0"
+template: punchline
+title: last-train-home
+duration_sec: 15
+style: emotional-watercolor-sketch
+character_lock: null
+sfx: on
+credit_to: null
+
+hook: "长大后才明白，家不是等你回去的地方。"
+visual: "末班地铁上，一个人靠着车窗，窗外是万家灯火"
+punchline: "是你愿意为之赶路的地方。"

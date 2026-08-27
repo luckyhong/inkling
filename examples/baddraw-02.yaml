@@ -1,0 +1,12 @@
+schema_version: "1.0"
+template: baddraw
+title: standup-meeting
+duration_sec: 15
+style: ms-paint-bad-doodle
+character_lock: null
+sfx: on
+credit_to: null
+
+hook: "站会说好只要五分钟。"
+visual: "一群火柴人围成一圈站着，墙上的时钟指针已经画成了螺旋"
+punchline: "五分钟等于一节课。"
