@@ -18,14 +18,31 @@ const rootDir = path.join(__dirname, '..');
 
 const BW_FRACTION = 0.45; // see docs/schema.md beat algorithm — unvalidated assumption
 
+// F2/F3/F4/F7/F8/F9: CLI overrides applied on top of the loaded YAML, in
+// the one place that already parses it — keeps run_short.py a thin
+// dispatcher instead of a second place that understands short-script.yaml.
+const OVERRIDE_FLAGS = {
+  '--template': 'template',
+  '--style': 'style',
+  '--duration': 'duration_sec',
+  '--character-lock': 'character_lock',
+  '--sfx': 'sfx',
+  '--credit-to': 'credit_to',
+};
+
 function parseArgs(argv) {
-  const args = { out: path.join(rootDir, 'shortboard.json') };
+  const args = { out: path.join(rootDir, 'shortboard.json'), overrides: {} };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--input') args.input = argv[++i];
     else if (argv[i] === '--out') args.out = path.resolve(argv[++i]);
+    else if (argv[i] in OVERRIDE_FLAGS) args.overrides[OVERRIDE_FLAGS[argv[i]]] = argv[++i];
   }
   if (!args.input) {
-    console.error('usage: plan-short.mjs --input <short-script.yaml> [--out <shortboard.json>]');
+    console.error(
+      'usage: plan-short.mjs --input <short-script.yaml> [--out <shortboard.json>]\n' +
+        '       [--template twist|punchline|baddraw] [--style <id>] [--duration 15|21|30]\n' +
+        '       [--character-lock <text>] [--sfx on|off] [--credit-to <text>]',
+    );
     process.exit(1);
   }
   return args;
@@ -105,6 +122,10 @@ function toBool(value, defaultValue) {
 function main() {
   const args = parseArgs(process.argv.slice(2));
   const script = yaml.load(readFileSync(path.resolve(args.input), 'utf8'));
+  Object.assign(script, args.overrides);
+  if (args.overrides.duration_sec !== undefined) {
+    script.duration_sec = Number(args.overrides.duration_sec);
+  }
   const templateConfig = loadTemplateConfig(script.template);
 
   const durationSec = script.duration_sec ?? templateConfig.duration_sec;

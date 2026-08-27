@@ -14,7 +14,8 @@
     "validate": "node scripts/validate-shortboard.mjs shortboard.json",
     "check": "npm run check:types && npm run validate",
     "dev": "remotion studio src/index.ts",
-    "render:preview": "remotion render src/index.ts ShortVideo out/preview.mp4 --codec=h264 --crf=23 --pixel-format=yuv420p --scale=0.6666666666666666 --concurrency=1"
+    "render:preview": "remotion render src/index.ts ShortVideo out/preview.mp4 --codec=h264 --crf=23 --pixel-format=yuv420p --scale=0.6666666666666666 --concurrency=1",
+    "render": "remotion render src/index.ts ShortVideo out/video.mp4 --codec=h264 --crf=18 --pixel-format=yuv420p --concurrency=1"
   },
   "dependencies": {
     "@remotion/cli": "4.0.487",
