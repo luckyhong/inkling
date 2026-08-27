@@ -10,6 +10,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
+import { resolveStyle as resolveLibraryStyle } from './style-library.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, '..');
@@ -34,7 +35,7 @@ function loadTemplateConfig(template) {
   return JSON.parse(readFileSync(file, 'utf8'));
 }
 
-function resolveStyle(script, templateConfig) {
+function resolveTemplateStyleId(script, templateConfig) {
   const requested = script.style ?? templateConfig.style_suggestions[0];
   if (templateConfig.style_lock && requested !== templateConfig.style_lock) {
     if (script.style) {
@@ -45,6 +46,29 @@ function resolveStyle(script, templateConfig) {
     return templateConfig.style_lock;
   }
   return requested;
+}
+
+// Real fingerprint (was a "placeholder" string in Phase 1, before the style
+// library existed): sha256 over style metadata + reference image bytes,
+// mirroring upstream's story-to-video.mjs. Purely a function of the style
+// definition, so it's computable at plan time — no image generation needed.
+function computeStyleFingerprint(style) {
+  const hash = createHash('sha256');
+  hash.update(
+    JSON.stringify({
+      library_version: style.library_version,
+      id: style.id,
+      name_zh: style.name_zh,
+      prompt: style.prompt,
+      color_hint: style.color_hint,
+      avoid: style.avoid,
+      references: style.references.map(({ path: p, role }) => ({ path: p, role })),
+    }),
+  );
+  for (const reference of style.references) {
+    hash.update(readFileSync(reference.absolute_path));
+  }
+  return hash.digest('hex').slice(0, 16);
 }
 
 function computeBeats(durationSec, ratio) {
@@ -88,7 +112,10 @@ function main() {
   const templateConfig = loadTemplateConfig(script.template);
 
   const durationSec = script.duration_sec ?? templateConfig.duration_sec;
-  const styleId = resolveStyle(script, templateConfig);
+  const requestedStyleId = resolveTemplateStyleId(script, templateConfig);
+  const styleRecord = resolveLibraryStyle(rootDir, requestedStyleId);
+  const styleId = styleRecord.id;
+  const styleFingerprint = computeStyleFingerprint(styleRecord);
   const beats = computeBeats(durationSec, templateConfig.ratio);
   const characterLock = script.character_lock ?? null;
 
@@ -102,7 +129,7 @@ function main() {
       fps: 30,
       duration_sec: durationSec,
       style_id: styleId,
-      style_fingerprint: 'placeholder',
+      style_fingerprint: styleFingerprint,
       character_lock: characterLock,
       character_reference_id: lockHash(characterLock),
       sfx: toBool(script.sfx, true),

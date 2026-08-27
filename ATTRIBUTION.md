@@ -20,5 +20,6 @@
 - 仓库：https://github.com/threerocks/hand-drawn-styles
 - 协议：MIT，Copyright (c) 2026 liulei
 - 复用内容：手绘风格配方（`colored-pencil-diary`、`naive-marker-notes`、`emotional-watercolor-sketch`、`ms-paint-bad-doodle`、`whiteboard-explainer`、`bean-doodle-infographic` 等）经上游项目改编后的风格定义
+- 已 vendor 至 `styles/style-library.json` + `styles/references/`（6 个风格子集 + `colored-pencil-diary` 的 4 张参考板图与 profile 文本，逐字复制自上游 `references/`）
 
 上述两份协议原文附于本仓库 `LICENSE` 与后续 vendoring 风格资产时一并保留。
