@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "project": {
+    "title": "overtime-trap",
+    "template": "twist",
+    "width": 1080,
+    "height": 1440,
+    "fps": 30,
+    "duration_sec": 21,
+    "style_id": "colored-pencil-diary",
+    "style_fingerprint": "placeholder",
+    "character_lock": "同一青年男性，短发，灰色卫衣",
+    "character_reference_id": "98106d8b54ef",
+    "sfx": true,
+    "beats": {
+      "hook_end_sec": 1.2,
+      "draw_start_sec": 1.2,
+      "bw_complete_sec": 8.03,
+      "color_complete_sec": 16.38,
+      "punchline_start_sec": 16.38
+    }
+  },
+  "scene": {
+    "id": "01",
+    "hook_text": "他以为加班能换来升职。",
+    "punchline_text": "换来的是：位置都没了。",
+    "visual": "空荡办公室只剩他一人，工位上贴着离职便签",
+    "credit_to": null,
+    "layers": [
+      "hook_text",
+      "bw_full",
+      "color",
+      "punchline_text"
+    ],
+    "assets": {
+      "bw": "assets/placeholder_bw.svg",
+      "color": "assets/placeholder_color.svg"
+    }
+  }
+}

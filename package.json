@@ -9,7 +9,8 @@
   },
   "scripts": {
     "check:types": "tsc --noEmit",
-    "generate:sfx": "node scripts/generate-sfx.mjs"
+    "generate:sfx": "node scripts/generate-sfx.mjs",
+    "plan": "node scripts/plan-short.mjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.487",
