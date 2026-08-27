@@ -26,6 +26,8 @@ export interface ShortScript {
 export interface ShortboardBeats {
   hook_end_sec: number;
   draw_start_sec: number;
+  /** End of the black-and-white reveal sub-phase; color wipe starts here. */
+  bw_complete_sec: number;
   color_complete_sec: number;
   punchline_start_sec: number;
 }

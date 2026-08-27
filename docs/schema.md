@@ -42,6 +42,7 @@ punchline: "换来的是：位置都没了。"
     "beats": {
       "hook_end_sec": 1.2,
       "draw_start_sec": 1.2,
+      "bw_complete_sec": 8.0,
       "color_complete_sec": 16.5,
       "punchline_start_sec": 16.5
     }
@@ -124,13 +125,16 @@ punchline: "换来的是：位置都没了。"
 }
 ```
 
-节拍算法（`plan-short` 在 Phase 1 实现时使用）：
+节拍算法（`scripts/plan-short.mjs` 实现）：
 
 ```text
 hook_end = min(1.2, duration_sec * 0.08)
-color_complete = duration_sec * clamp(ratio, 0.70, 0.85)
-punchline_start = color_complete
 draw_start = hook_end
+color_complete = duration_sec * clamp(ratio, 0.70, 0.85)
+bw_complete = draw_start + (color_complete - draw_start) * BW_FRACTION
+punchline_start = color_complete
 ```
 
-> `ratio` 初始值来自内容运营经验，非已验证最优值，详见 PRD 第 5 节数据反馈闭环设计。
+`BW_FRACTION = 0.45`：黑白线稿子阶段在「draw_start → color_complete」这段揭示窗口里占的比例，之后交给彩色揭示。这个值和 `ratio`一样，来自 PRD 8.1 节 21s Twist 示例（1.2–8.0s 黑白 / 8.0–16.5s 彩色）反推，**同样是未经真实数据验证的假设**，PRD 原文的 `beats` 示例遗漏了这个子阶段边界，Phase 1 实现时补上了 `bw_complete_sec` 字段。
+
+> `ratio`、`BW_FRACTION` 初始值来自内容运营经验，非已验证最优值，详见 PRD 第 5 节数据反馈闭环设计。
