@@ -11,6 +11,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 import { resolveStyle as resolveLibraryStyle } from './style-library.mjs';
+import { lockHash } from './resolve-character.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, '..');
@@ -99,11 +100,6 @@ function toBool(value, defaultValue) {
   if (['on', 'yes', 'true'].includes(normalized)) return true;
   if (['off', 'no', 'false'].includes(normalized)) return false;
   return defaultValue;
-}
-
-function lockHash(characterLock) {
-  if (!characterLock) return null;
-  return createHash('sha256').update(characterLock).digest('hex').slice(0, 12);
 }
 
 function main() {
