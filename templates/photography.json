@@ -1,0 +1,23 @@
+{
+  "template": "photography",
+  "duration_sec": 60,
+  "ratio": 0.75,
+  "style_suggestions": [],
+  "style_lock": null,
+  "first_segment_duration_sec": 37,
+  "later_segment_duration_sec": 20,
+  "hook_window_sec": 3,
+  "fast_cut_duration_sec": 1.25,
+  "hook_cut_duration_sec": 0.75,
+  "slow_cut_duration_sec": 5,
+  "walk_speed_multiplier": 2.5,
+  "default_bpm": 120,
+  "color_warm_shift": 15,
+  "color_saturation": 1.3,
+  "photo_contrast": 1.2,
+  "bgm_target_lufs": -9,
+  "transition_dark_flash_frames": 2,
+  "transition_whip_duration_sec": 0.3,
+  "use_whip_transition": false,
+  "shutter_sfx_enabled": false
+}
