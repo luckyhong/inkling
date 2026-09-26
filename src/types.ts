@@ -1,4 +1,4 @@
-export type Template = 'twist' | 'punchline' | 'baddraw';
+export type Template = 'twist' | 'punchline' | 'baddraw' | 'photography';
 
 export const SCHEMA_VERSION = '1.0';
 
@@ -128,4 +128,56 @@ export interface TemplateConfig {
   style_suggestions: string[];
   /** If set, this style_id is forced regardless of user input (BadDraw). */
   style_lock: string | null;
+}
+
+export interface PhotographySegmentConfig {
+  clip_path: string;
+  in_point_sec?: number;
+  out_point_sec?: number;
+  still_photo_path?: string;
+  reveal_time_sec?: number;
+  walk_start_sec?: number;
+  walk_end_sec?: number;
+  reaction_start_sec?: number;
+}
+
+export interface PhotographyScript {
+  schema_version: typeof SCHEMA_VERSION;
+  template: 'photography';
+  title: string;
+  segments: PhotographySegmentConfig[];
+  bgm_path: string;
+  bgm_bpm?: number;
+  subtitle_path?: string;
+  subtitle_type?: 'lyric' | 'speech';
+  source_credit?: string;
+  duration_target_sec?: number;
+}
+
+export interface PhotographyBeats {
+  segments: Array<{
+    start_sec: number;
+    end_sec: number;
+    clip_start_sec: number;
+    clip_end_sec: number;
+    reveal_time_sec?: number;
+    walk_speed_multiplier?: number;
+    reaction_start_sec?: number;
+  }>;
+  beat_times_sec: number[];
+}
+
+export interface PhotographyProject {
+  title: string;
+  template: 'photography';
+  width: 1080;
+  height: 1920;
+  fps: 30;
+  duration_sec: number;
+  bgm_path: string;
+  subtitle_path: string | null;
+  subtitle_type: 'lyric' | 'speech' | null;
+  source_credit: string | null;
+  beats: PhotographyBeats;
+  segments: PhotographySegmentConfig[];
 }

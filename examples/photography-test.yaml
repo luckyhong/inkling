@@ -1,0 +1,46 @@
+schema_version: "1.0"
+template: photography
+title: test-synthetic-compilation
+
+# Test segments using synthetic clips
+segments:
+  # Segment 1: Full process simulation
+  - clip_path: examples/photography/clips/segment_01.mp4
+    in_point_sec: 0
+    out_point_sec: 38
+    still_photo_path: examples/photography/photos/photo_01.jpg
+    reveal_time_sec: 8
+    walk_start_sec: 20
+    walk_end_sec: 28
+    reaction_start_sec: 30
+
+  # Segment 2: Condensed
+  - clip_path: examples/photography/clips/segment_02.mp4
+    in_point_sec: 0
+    out_point_sec: 20
+    still_photo_path: examples/photography/photos/photo_02.jpg
+    reveal_time_sec: 6
+    walk_start_sec: 12
+    walk_end_sec: 16
+    reaction_start_sec: 17
+
+  # Segment 3: Condensed
+  - clip_path: examples/photography/clips/segment_03.mp4
+    in_point_sec: 0
+    out_point_sec: 20
+    still_photo_path: examples/photography/photos/photo_03.jpg
+    reveal_time_sec: 5
+    walk_start_sec: 11
+    walk_end_sec: 15
+    reaction_start_sec: 16
+
+# Synthetic beat track
+bgm_path: examples/photography/bgm/test_beat_track.mp3
+bgm_bpm: 120
+
+# Test subtitles
+subtitle_path: examples/photography/subtitles/lyrics.srt
+subtitle_type: lyric
+
+# Test source credit
+source_credit: "测试素材（合成）"

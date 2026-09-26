@@ -32,16 +32,20 @@ python3 scripts/run_short.py --mode finish
 
 产出目录：`out/shorts/<slug>/{video.mp4, video-preview.mp4, cover.png, meta.json}`
 
-## 三个模板
+## 四个模板
 
 | 模板 | 用途 | 风格 |
 | --- | --- | --- |
 | **Twist**（反转） | 前半误导，揭示后打脸 | `colored-pencil-diary` / `naive-marker-notes` |
 | **Punchline**（金句） | 一句话配强画面，情绪共鸣 | `colored-pencil-diary` / `emotional-watercolor-sketch` |
 | **BadDraw**（烂画喜剧） | 荒诞吐槽，反差与转发欲 | 强制 `ms-paint-bad-doodle`，忽略用户指定风格 |
+| **Photography**（摄影编辑） | 街头摄影/拍立得赠送多段式剪辑 | 实拍素材，自动卡点、变速、色彩分级 |
 
-每个模板 2 条示例脚本在 [`examples/`](examples/)。完整字段说明见
+前三个模板的示例脚本在 [`examples/`](examples/)。完整字段说明见
 [`docs/schema.md`](docs/schema.md)。
+
+**Photography 模板**专为实拍素材设计，支持 3-5 段式叙事、BGM 节拍检测、速度渐变、字幕烧录。
+详见 [`docs/photography-template.md`](docs/photography-template.md)。
 
 ## 节拍参数的验证状态
 

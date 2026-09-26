@@ -23,6 +23,13 @@ public/assets/generated/
 prompts/generated/
 image-jobs.json
 
+# Photography pipeline artifacts
+photography-board.json
+examples/photography/clips/
+examples/photography/photos/
+examples/photography/bgm/
+examples/photography/subtitles/
+
 # Python
 __pycache__/
 *.pyc
