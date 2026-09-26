@@ -17,5 +17,7 @@
   "photo_contrast": 1.2,
   "bgm_target_lufs": -9,
   "transition_dark_flash_frames": 2,
-  "transition_whip_duration_sec": 0.3
+  "transition_whip_duration_sec": 0.3,
+  "use_whip_transition": false,
+  "shutter_sfx_enabled": false
 }

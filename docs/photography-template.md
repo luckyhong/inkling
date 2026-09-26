@@ -179,7 +179,7 @@ source_credit: "素材来源 @创作者ID"  # 可选
 - **照片揭示前**：可选 1-2 帧暗闪（`transition_dark_flash_frames: 2`）
 - **段间转场**：
   - 硬切（默认）
-  - 或合成动态模糊扫光转场（`transition_whip_duration_sec: 0.3`，未在当前版本实现，预留接口）
+  - 或合成动态模糊扫光转场（`transition_whip_duration_sec: 0.3`，通过 `use_whip_transition: true` 启用）
 
 ### 6. 色彩分级
 
@@ -190,12 +190,12 @@ source_credit: "素材来源 @创作者ID"  # 可选
 
 **静态照片**：
 - 高对比度（`photo_contrast: 1.2`）
-- 锐化（未实现，可扩展 `unsharp` 滤镜）
-- 阴影稍冷（未实现，可扩展 `curves` LUT）
+- 锐化（`unsharp` 滤镜：`unsharp=5:5:1.5:5:5:0.0`）
+- 阴影稍冷（`curves` RGB 曲线：红色和绿色通道在阴影区域略微降低）
 
 **裁切策略**：
 - 横向 3:2 照片裁切填充 9:16 画幅（`crop=1080:1920`），无黑边，无模糊填充
-- 可选 Ken Burns 缓动（放大 + 平移，未在当前版本实现，预留接口）
+- Ken Burns 缓动：从 1.0x 缓慢放大到 1.2x，同时应用微小平移，使用 `zoompan` 滤镜
 
 ### 7. 字幕
 
@@ -219,11 +219,11 @@ source_credit: "素材来源 @创作者ID"  # 可选
 
 **环境音**：
 - 默认静音（素材中的环境音被 BGM 完全替代）
-- 可选保留原声窗口（未在当前版本实现，预留 `keep_original_voice_windows` 配置接口）
+- 可选保留原声窗口：通过 `keep_original_voice_windows` 配置，在指定时间窗口保留原始音频并与 BGM 混音，BGM 在这些窗口自动衰减至 30%（音频闪避/ducking）
 
 **可选音效**：
-- 快门音效（SFX）：在关键切点（如 reveal_time_sec）叠加合成快门声
-- 当前版本未实现，可复用 `scripts/generate-sfx.mjs` 生成免版权音效
+- 快门音效（SFX）：在关键切点（如 reveal_time_sec）叠加合成快门声，使用 `shutter_sfx_enabled: true` 启用
+- 使用 ffmpeg `anoisesrc` 合成机械快门音：粉噪声 + 高通/低通滤波 + 回声效果，生成免版权音效
 
 ### 9. 结尾
 
@@ -297,7 +297,9 @@ source_credit: "素材来源 @创作者ID"  # 可选
   "photo_contrast": 1.2,                 // 照片对比度倍率
   "bgm_target_lufs": -9,                 // BGM 目标响度
   "transition_dark_flash_frames": 2,     // 暗闪转场帧数
-  "transition_whip_duration_sec": 0.3    // 扫光转场时长（预留）
+  "transition_whip_duration_sec": 0.3,   // 扫光转场时长
+  "use_whip_transition": false,          // 启用扫光转场（默认 false）
+  "shutter_sfx_enabled": false           // 启用快门音效（默认 false）
 }
 ```
 
@@ -348,19 +350,37 @@ ls -lh out/photography/street-polaroid-memories/
 ffplay out/photography/street-polaroid-memories/video.mp4
 ```
 
-### 自动化测试（预留）
+### 自动化测试
 
-当前版本未包含自动化测试。可扩展为：
+包含完整的端到端测试：
 
 ```bash
-# tests/test_photography.py
-def test_photography_pipeline():
-    # 1. 使用合成素材运行 plan 模式
-    # 2. 验证 photography-board.json 的节拍数量 >= 40
-    # 3. 运行 render 模式
-    # 4. 验证输出视频的分辨率、帧率、时长
-    # 5. 验证封面图片的分辨率
-    pass
+python3 scripts/test_photography.py
+```
+
+**测试覆盖**：
+- ✅ 合成测试素材生成（视频片段 + 照片 + BGM + 字幕）
+- ✅ 节拍检测与剪辑规划
+- ✅ 多段拼接与变速
+- ✅ 色彩分级（视频 + 照片）
+- ✅ 暗闪转场
+- ✅ 扫光转场
+- ✅ Ken Burns 效果
+- ✅ 快门音效合成
+- ✅ 封面生成（9:16 + 3:4）
+- ✅ 标题候选生成
+- ✅ 输出规格验证（分辨率、帧率、时长）
+
+测试结果示例：
+
+```
+Feature verification:
+  ✓ Dark flash frames before photo reveals (enabled)
+  ✓ Whip transitions between 3 segments
+  ✓ Ken Burns effect on 3 still photos
+  ✓ Still photo grading (contrast=1.3, sharpening+cooler shadows)
+  ✓ Original voice mixing with BGM ducking (2 windows)
+  ✓ Shutter SFX synthesis at reveal points
 ```
 
 ---
@@ -424,35 +444,68 @@ brew install ffmpeg
 
 ## 扩展开发
 
-### 添加新的转场效果
+### 已实现特性
 
-在 `scripts/run_photography.py` 的 `process_segment()` 函数中扩展：
+以下特性已在当前版本实现并通过测试：
 
-```python
-# 添加扫光转场（whip transition）
-if segment_index > 0 and config.get("use_whip_transition"):
-    # 在前一段末尾添加动态模糊
-    filters.append(
-        f"[v{i}]boxblur=10:1,setpts=PTS*0.5[whip_out]; "
-        f"[v{i+1}]boxblur=10:1,setpts=PTS*0.5[whip_in]; "
-        f"[whip_out][whip_in]xfade=transition=wiperight:duration=0.3[v_transition]"
-    )
-```
+1. **暗闪转场**：照片揭示前 1-2 帧黑色闪烁
+2. **扫光转场**：段间动态模糊扫光效果（可配置启用）
+3. **Ken Burns 效果**：静态照片缓慢放大（1.0x → 1.2x）+ 微小平移
+4. **照片独立分级**：高对比度 + 锐化 + 冷色调阴影
+5. **原声窗口混音**：保留原始音频并与 BGM 混音，自动闪避
+6. **快门音效合成**：免版权机械快门声，ffmpeg 合成
 
-### 集成 Ken Burns 效果
+### 可扩展功能
 
-为静态照片添加缓动放大 + 平移：
+#### 1. 更复杂的 Ken Burns 路径
+
+当前实现为简单的中心放大，可扩展为：
 
 ```python
-# 在 process_segment() 中处理 still_photo_path
-if segment.get("still_photo_path"):
-    photo_filter = (
-        f"[1:v]scale=2160:3840,"  # 放大 2 倍
-        f"zoompan=z='min(zoom+0.0015,1.5)':d=125:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920"
-    )
+# 添加多种预设路径
+ken_burns_presets = {
+    "zoom_center": "zoompan=z='min(zoom+0.002,1.2)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'",
+    "zoom_left_to_right": "zoompan=z='min(zoom+0.002,1.2)':x='if(lte(zoom,1.1),0,iw-iw/zoom)':y='ih/2-(ih/zoom/2)'",
+    "zoom_top_to_bottom": "zoompan=z='min(zoom+0.002,1.2)':x='iw/2-(iw/zoom/2)':y='if(lte(zoom,1.1),0,ih-ih/zoom)'"
+}
 ```
 
-### 添加语音识别字幕生成
+#### 2. 更多转场效果
+
+在 `apply_whip_transitions()` 中添加：
+
+```python
+transitions = {
+    "whip": "xfade=transition=wiperight:duration=0.3",
+    "dissolve": "xfade=transition=fade:duration=0.5",
+    "zoom": "xfade=transition=zoomin:duration=0.4"
+}
+```
+
+#### 3. 高级色彩分级
+
+集成 LUT 文件支持：
+
+```python
+def apply_lut(input_filter, lut_path):
+    return f"{input_filter},lut3d={lut_path}"
+```
+
+#### 4. 智能节拍检测
+
+集成 librosa 或 aubio 库以获得更准确的节拍检测：
+
+```python
+import librosa
+
+def detect_beats_librosa(audio_path):
+    y, sr = librosa.load(audio_path)
+    tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
+    beat_times = librosa.frames_to_time(beats, sr=sr)
+    return beat_times.tolist()
+```
+
+#### 5. 语音识别字幕生成
 
 集成 Whisper 或其他 ASR 引擎：
 
@@ -469,6 +522,22 @@ def generate_speech_subtitles(video_path, output_srt):
             f.write(f"{format_srt_time(segment['start'])} --> {format_srt_time(segment['end'])}\n")
             f.write(f"{segment['text'].strip()}\n\n")
 ```
+
+#### 6. 动态速度曲线
+
+当前实现为固定倍速，可扩展为平滑的速度曲线：
+
+```python
+# 使用 setpts 实现非线性速度变化
+speed_curve = "setpts='if(lt(T,5),PTS/2.5,if(lt(T,7),PTS/(2.5-0.5*(T-5)/2),PTS))'"
+```
+
+---
+
+**相关工具**：
+- [Remotion](https://www.remotion.dev/) - React 视频渲染引擎（本项目其他模板使用）
+- [librosa](https://librosa.org/) - Python 音频分析库
+- [Whisper](https://github.com/openai/whisper) - OpenAI 语音识别
 
 ---
 
@@ -503,9 +572,13 @@ def generate_speech_subtitles(video_path, output_srt):
 - ✅ 字幕烧录（SRT/LRC 支持）
 - ✅ 多尺寸封面生成
 - ✅ 标题候选生成
-- ⏳ 待实现：Ken Burns 效果
-- ⏳ 待实现：扫光转场
-- ⏳ 待实现：快门音效叠加
+- ✅ Ken Burns 效果（静态照片缓动放大 + 平移）
+- ✅ 扫光转场（段间动态模糊转场）
+- ✅ 暗闪转场（照片揭示前）
+- ✅ 照片独立分级（高对比度 + 锐化 + 冷色调阴影）
+- ✅ 原声窗口混音（BGM 自动闪避）
+- ✅ 快门音效合成（免版权）
+- ✅ 完整端到端自动化测试
 
 ---
 
